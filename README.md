@@ -11,6 +11,22 @@ The performance was (as expected) not to great. We suggested to rewrite to use M
 Using this design you will always have to reread all the data. Even if only one of the rows in one of the child tables have changed.
 This design could never really scale well.
 
+## Oracle End-to-end Metrics
+In the tests i set the Oracle end-to-end metrics (MODULE and ACTION).
+This way I can - for instance - see how many data blocks was read by each approach:
+
+```sql
+select
+  action,
+  sum(round(s.buffer_gets/ case when s.executions = 0 then 1
+                            else s.executions
+                       end, 2))                           sum_gets_pr_exe
+from gv$sql s
+where 1=1
+  and module='DEMO'
+group by action
+order by 2;
+```
 ## Test cases
 To prove this I wrote a small POC simulating the different approaches. 
 The test includes this 4 senarios:
