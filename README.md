@@ -1,0 +1,35 @@
+# POC: Editing Dataset - Bad practises
+
+## Description
+In this situation there was an application running some kind of analysis. 
+Every set of analysis had a set of metadata, starting of with a parent table.
+Dependent of the kind of analysis and the objects involved in the analysis there was different child tables involved with different depths.
+
+Some times the metadata needs to be changed. Then the user pulls all the data for one analysis into a parent object (object type) with data from all the related tables in nested collection (object and table types). The user then did changes on the object types. When ready the object was passed to an plsql procedure which deleted all the data, and inserted the new data.
+
+The performance was (as expected) not to great. We suggested to rewrite to use MERGE instead, BUT then I really started to think about it.
+Using this design you will always have to reread all the data. Even if only one of the rows in one of the child tables have changed.
+This design could never really scale well.
+
+## Test cases
+To prove this I wrote a small POC simulating the different approaches. 
+The test includes this 4 senarios:
+
+### Test: INSERT_DEMO
+This was the original approach which when updating deleteted all the analysis data, and then re-inserting it.
+
+### Test: UPSERT_DEMO 
+The next approach is the UPSERT, which instead of deleting, do a MERGE, and then DELETE all data that no longer is in the pasted object type.
+
+### Test: CHANGE_DEMO
+In this approach we introduce a CHANGED_TYPE in the child tables with the following meaning:
+- NULL = no change 
+- 1    = INSERT
+- 2    = UPDATE
+- 3    = DELETE
+This way the update can actually insert, update or delete only what has changed.
+
+### Test: CALCULATE_DEMO
+If we didn't have a CHANGE_TYPE, this could also be calculated when the plsql procedure receives the data. THe disadvantage is that all data has to be read, but the update could then use the approach from the CHANGE_DEMO test.
+
+The End. 
