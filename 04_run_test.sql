@@ -1,3 +1,4 @@
+clear scr
 set serveroutput on
 declare
    l_demo      demo_ot;

@@ -48,4 +48,43 @@ This way the update can actually insert, update or delete only what has changed.
 ### Test: CALCULATE_DEMO
 If we didn't have a CHANGE_TYPE, this could also be calculated when the plsql procedure receives the data. THe disadvantage is that all data has to be read, but the update could then use the approach from the CHANGE_DEMO test.
 
+## Scripts
+
+## Script: 01_create_test_tables.sql
+
+This script creates the tables: big_table, child, child2 and child3.
+
+```sql
+sql> @01_create_test_tables.sql
+```
+
+## Script: 02_create_test_types.sql
+
+This script create the object and nested table types.
+
+```sql
+sql> @02_create_test_types.sql
+```
+
+## Script: 03_create_test_package.sql
+
+This script create the specification and body for the DEMO package.
+
+```sql
+sql> @03_create_test_package.sql
+```
+
+## Script: 04_run_test.sql
+
+This script runs the tests. 
+** Note! Before running flush the shared pool (in all instance if doing RAC). **
+
+```sql
+sql> @04_run_test.sql
+```
+
+## Script: 05_check_sql.sql
+
+This script contains some SQLs to investigate SQLs and buffer gets in the shared pool.
+
 The End. 
